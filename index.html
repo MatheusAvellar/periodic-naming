@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Language" content="en-us"/>
+    <meta name="copyright" content="&copy; 2016 Matheus Avellar"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="author" content="Matheus Avellar"/>
+    <base href="http://avellar.ml" target="_blank"/>
+    <title>Periodic Naming</title>
+    <link href="http://fonts.googleapis.com/css?family=Yantramanav" type="text/css" rel="stylesheet"/>
+    <link href="resources/favicon.ico" type="image/ico" rel="shortcut icon"/>
+    <link href="resources/favicon.ico" type="image/ico" rel="icon"/>
+    <style type="text/css">
+        ::-webkit-input-placeholder {
+            color: #95a5a6;
+        }
+        :-moz-placeholder {
+           color: #95a5a6;
+           opacity:  1;
+        }
+        ::-moz-placeholder {
+           color: #95a5a6;
+           opacity:  1;
+        }
+        :-ms-input-placeholder {
+           color: #95a5a6;
+        }
+
+        body, input {
+            font-family: "Yantramanav", sans-serif;
+        }
+        body {
+            background-color: #20262e;
+            position: relative;
+            color: #4a575d;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        input {
+            outline: 0;
+            border: 0;
+            border-bottom: 1px solid #4a575d;
+            padding: 5px 10px;
+            background-color: transparent;
+            color: #eee;
+            font-size: 17px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #app {
+            position: fixed;
+            right: 20%;
+            left: 20%;
+            bottom: 20%;
+            top: 20%;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #4a575d;
+            overflow-y: auto;
+        }
+        #result {
+            padding: 20px;
+            font-size: 25px;
+        }
+        .element {
+            display: inline-block;
+            padding: 15px 10px;
+            color: #ededed;
+            border: 2px solid #ededed;
+            text-align: center;
+            position: relative;
+            margin: 3px;
+        }
+        .element .symbol {
+            font-size: 25px;
+        }
+        .element .name, .element .count {
+            font-size: 10px;
+        }
+        .element .count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input id="input" placeholder="Insert a word"
+            oninput="inputUpdated();"
+            onfocus="inputUpdated();"
+            onblur="inputUpdated();"
+            onkeypress="inputUpdated();"
+            onkeydown="inputUpdated();"
+        />
+        <div id="result"></div>
+    </div>
+    <script type="text/javascript">
+
+    String.prototype.capitalize = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    };
+
+    String.prototype.isUpperCase = function() {
+        return (this.valueOf().toUpperCase() === this.valueOf() && this.valueOf().trim() !== "");
+    };
+
+    const elements = {
+        /*uut:["Ununtrium", 113],
+        uup:["Ununpentium", 115],
+        uus:["Ununseptium", 117],
+        uuo:["Ununoctium", 118],*/
+        he: ["Helium", 2],
+        li: ["Lithium", 3],
+        be: ["Berylium", 4],
+        ne: ["Neon", 10],
+        na: ["Sodium", 11],
+        be: ["Magnesium", 12],
+        al: ["Aluminum", 13],
+        si: ["Solicon", 14],
+        cl: ["Chlorine", 17],
+        ar: ["Argon", 18],
+        ca: ["Calcium", 20],
+        sc: ["Scandium", 21],
+        ti: ["Titanium", 22],
+        cr: ["Chromium", 24],
+        mn: ["Manganese", 25],
+        fe: ["Iron", 26],
+        co: ["Cobalt", 27],
+        ni: ["Nickel", 28],
+        cu: ["Copper", 29],
+        zn: ["Zinc", 30],
+        ga: ["Gallium", 31],
+        ge: ["Germanium", 32],
+        as: ["Arsenic", 33],
+        se: ["Selenium", 34],
+        br: ["Bromine", 35],
+        kr: ["Krypton", 36],
+        rb: ["Rubidium", 37],
+        sr: ["Strontium", 38],
+        zr: ["Zirconium", 40],
+        nb: ["Niobium", 41],
+        mo: ["Molybdenum", 42],
+        tc: ["Technetium", 43],
+        ru: ["Ruthenium", 44],
+        rh: ["Rhodium", 45],
+        pd: ["Palladium", 46],
+        ag: ["Silver", 47],
+        cd: ["Cadmium", 48],
+        in: ["Indium", 49],
+        sn: ["Tin", 50],
+        sb: ["Antimony", 51],
+        te: ["Tellurium", 52],
+        xe: ["Xenon", 54],
+        cs: ["Cesium", 55],
+        ba: ["Barium", 56],
+        la: ["Lanthanum", 57],
+        ce: ["Cerium", 58],
+        pr: ["Praseodymium", 59],
+        nd: ["Neodymium", 60],
+        pm: ["Promethium", 61],
+        sm: ["samarium", 62],
+        eu: ["Europium", 63],
+        gd: ["Gadolinium", 64],
+        tb: ["Terbium", 65],
+        dy: ["Dyprosium", 66],
+        ho: ["Holmiuro", 67],
+        er: ["Erbium", 68],
+        tm: ["Thulium", 69],
+        yb: ["Ytterbium", 70],
+        lu: ["Lutetium", 71],
+        hf: ["Hafnium", 72],
+        ta: ["Tantalum", 73],
+        re: ["Rhenium", 75],
+        os: ["Osmium", 76],
+        ir: ["Iridium", 77],
+        pt: ["Platinum", 78],
+        au: ["Gold", 79],
+        hg: ["Mercury", 80],
+        tl: ["Thallium", 81],
+        pb: ["Lead", 82],
+        bi: ["Bismuth", 83],
+        po: ["Polonium", 84],
+        at: ["Astatine", 85],
+        rn: ["Radon", 86],
+        fr: ["Francium", 87],
+        ra: ["Radium", 88],
+        ac: ["Actinium", 89],
+        th: ["Thorium", 90],
+        pa: ["Protactnium", 91],
+        np: ["Neptunium", 93],
+        pu: ["Plutonium", 94],
+        am: ["Americium", 95],
+        cm: ["Curium", 96],
+        bk: ["Berkelium", 97],
+        cf: ["Californium", 98],
+        es: ["Einstenium", 99],
+        fm: ["Fermium", 100],
+        md: ["Mendelevium", 101],
+        no: ["Nobelium", 102],
+        lr: ["Lawrencium", 103],
+        rf: ["Rutherfordium", 104],
+        db: ["Dubnium", 105],
+        sg: ["Seaborgium", 106],
+        bh: ["Bohrium", 107],
+        hs: ["Hassium", 108],
+        mt: ["Meitnerium", 109],
+        ds: ["Darmstadtium", 110],
+        rg: ["Roentgenium", 111],
+        cn: ["Copernicium", 112],
+        fl: ["Flerovium", 114],
+        lv: ["Livermorium", 116],
+        h: ["Hydrogen", 1],
+        b:  ["Boron", 5],
+        c:  ["Carbon", 6],
+        n:  ["Nitrogen", 7],
+        o:  ["Oxygen", 8],
+        f:  ["Fluorine", 9],
+        p:  ["Phosphorus", 15],
+        s:  ["Sulfur", 16],
+        v:  ["Vanadium", 23],
+        k:  ["Potassium", 19],
+        y:  ["Yttrium", 39],
+        i:  ["Iodine", 53],
+        w:  ["Tungsten", 74],
+        u:  ["Uranium", 92]
+    }
+
+    var inputUpdated = function() {
+        let input = document.getElementById("input"),
+          result = document.getElementById("result");
+        let res = input.value.toLowerCase().trim();
+
+        let arr = [];
+
+        for (let i in elements) {
+            res = res.split(i).join("$" + i.toUpperCase() + "$");
+        }
+        arr = res.split("$").filter(s => s !== "");
+        
+        result.innerHTML = "";
+        for (let j = 0, l = arr.length; j < l; j++) {
+            if (arr[j].replace(/[^a-z]/gi, "").isUpperCase()) {
+                let s = arr[j].toLowerCase();
+                result.innerHTML +=
+                    "<div class='element'>"
+                    + "<div class='count'>" + elements[s][1] + "</div>"
+                    + "<div class='symbol'>" + s.capitalize() + "</div>"
+                    + "<div class='name'>" + elements[s][0] + "</div>"
+                    +"</div>";
+            } else {
+                result.innerHTML += arr[j];
+            }
+        }
+    }
+</script>
+</body>
+</html>
